@@ -89,6 +89,6 @@ Here, use the test data to view how well the network is modeling the data. If so
 
 ![Training](https://github.com/wangyida/deep-fund/blob/master/img_fc2/train_and_predict.png)
 
-![Validation](https://github.com/wangyida/deep-fund/blob/master/img_fc2/val_and_predict.png)
+![Validation](https://github.com/wangyida/deep-fund/blob/master/img_fc2/val_predict.png)
 
 ![Testing](https://github.com/wangyida/deep-fund/blob/master/img_fc2/test_and_predict.png)
