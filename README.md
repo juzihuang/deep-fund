@@ -81,14 +81,14 @@ The more hidden nodes you have, the more accurate predictions the model will mak
 
 ### Loss
 
-![Training and validation loss]()
+![Training and validation loss](https://github.com/wangyida/deep-fund/blob/master/img_fc2/fund_regression_result.png)
 
 ### Check out the predictions
 
 Here, use the test data to view how well the network is modeling the data. If something is completely wrong here, make sure each step in your network is implemented correctly.
 
-![Training]()
+![Training](https://github.com/wangyida/deep-fund/blob/master/img_fc2/train_and_predict.png)
 
-![Validation]()
+![Validation](https://github.com/wangyida/deep-fund/blob/master/img_fc2/val_and_predict.png)
 
-![Testing]()
+![Testing](https://github.com/wangyida/deep-fund/blob/master/img_fc2/test_and_predict.png)
