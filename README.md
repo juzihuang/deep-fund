@@ -1,4 +1,4 @@
-# One file training - initial tool for funds regression
+# Tools for csv Analysis and Regression Based on Deep Structures
 
 In this project, 2 layer neural network is used for predicting funds index within a single csv file.
 
@@ -11,21 +11,6 @@ Get the target labels in the second column and use remaining columns as feature.
 ```python
 targets = raw_data[2]
 features = raw_data.drop([0, 2], axis=1)
-```
-
-## Scaling target variables (optional)
-To make training the network easier, we'll standardize each of the continuous variables. That is, we'll shift and scale the variables such that they have zero mean and a standard deviation of 1.
-
-The scaling factors are saved so we can go backwards when we use the network for predictions.
-
-```python
-quant_features = ['1', '3', '4', '5', '6', '7']
-# Store scalings in a dictionary so we can convert back later
-scaled_features = {}
-for each in quant_features:
-    mean, std = data[each].mean(), data[each].std()
-    scaled_features[each] = [mean, std]
-    data.loc[:, each] = (data[each] - mean)/std
 ```
 
 ## Splitting the data into training, testing, and validation sets
@@ -68,27 +53,26 @@ Set the hyperparameters for the network. The strategy here is to find hyperparam
 
 We use a method know as Stochastic Gradient Descent (SGD) to train the network. The idea is that for each training pass, you grab a random sample of the data instead of using the whole data set. More training passes could also be used than with normal gradient descent, but each pass is much faster. This ends up training the network more efficiently. You'll learn more about SGD later.
 
-### Choose the number of epochs
-This is the number of times the dataset will pass through the network, each time updating the weights. As the number of epochs increases, the network becomes better and better at predicting the targets in the training set. You'll need to choose enough epochs to train the network well but not too many or you'll be overfitting.
+## Author infos
 
-### Choose the learning rate
-This scales the size of weight updates. If this is too big, the weights tend to explode and the network fails to fit the data. A good choice to start at is 0.1. If the network has problems fitting the data, try reducing the learning rate. Note that the lower the learning rate, the smaller the steps are in the weight updates and the longer it takes for the neural network to converge.
+### Basic info
 
-### Choose the number of hidden nodes
-The more hidden nodes you have, the more accurate predictions the model will make. Try a few different numbers and see how it affects the performance. You can look at the losses dictionary for a metric of the network performance. If the number of hidden units is too low, then the model won't have enough space to learn and if it is too high there are too many options for the direction that the learning can take. The trick here is to find the right balance in number of hidden units you choose.
+Yida Wang
 
-## Training results
+Email: yidawang.cn@gmail.com
 
-### Loss
+### Publications
 
-![Training and validation loss](https://github.com/wangyida/deep-fund/blob/master/img_fc2/fund_regression_result.png)
+[ZigzagNet: Efficient Deep Learning for Real Object Recognition Based on 3D Models](https://www.researchgate.net/profile/Yida_Wang/publications?sorting=recentlyAdded)
 
-### Check out the predictions
+[Self-restraint Object Recognition by Model Based CNN Learning](http://ieeexplore.ieee.org/document/7532438/)
 
-Here, use the test data to view how well the network is modeling the data. If something is completely wrong here, make sure each step in your network is implemented correctly.
+[Face Recognition Using Local PCA Filters](http://link.springer.com/chapter/10.1007%2F978-3-319-25417-3_5)
 
-![Training](https://github.com/wangyida/deep-fund/blob/master/img_fc2/train_and_predict.png)
+[CNTK on Mac: 2D Object Restoration and Recognition Based on 3D Model](https://www.microsoft.com/en-us/research/academic-program/microsoft-open-source-challenge/)
 
-![Validation](https://github.com/wangyida/deep-fund/blob/master/img_fc2/val_predict.png)
+[Large-Scale 3D Shape Retrieval from ShapeNet Core55](https://shapenet.cs.stanford.edu/shrec16/shrec16shapenet.pdf)
 
-![Testing](https://github.com/wangyida/deep-fund/blob/master/img_fc2/test_and_predict.png)
+### Personal Links
+
+[ResearchGate](https://www.researchgate.net/profile/Yida_Wang), [Github](https://github.com/wangyida), [GSoC 2016](https://summerofcode.withgoogle.com/archive/2016/projects/4623962327744512/), [GSoC 2015](https://www.google-melange.com/archive/gsoc/2015/orgs/opencv/projects/wangyida.html)
