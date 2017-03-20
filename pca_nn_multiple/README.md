@@ -18,7 +18,46 @@ in the LICENSE file.
 
 import numpy as np
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
+```
+
+## Define functions for file scanning 
+
+
+```python
+class ScanFile(object):
+    def __init__(self,directory,prefix=None,postfix='.csv'):
+        self.directory=directory
+        self.prefix=prefix
+        self.postfix=postfix
+
+    def scan_files(self):
+        files_list=[]
+
+        for dirpath,dirnames,filenames in os.walk(self.directory):
+            '''''
+            dirpath is a string, the path to the directory.
+            dirnames is a list of the names of the subdirectories in dirpath (excluding '.' and '..').
+            filenames is a list of the names of the non-directory files in dirpath.
+            '''
+            for special_file in filenames:
+                if self.postfix:
+                    special_file.endswith(self.postfix)
+                    files_list.append(os.path.join(dirpath,special_file))
+                elif self.prefix:
+                    special_file.startswith(self.prefix)
+                    files_list.append(os.path.join(dirpath,special_file))
+                else:
+                    files_list.append(os.path.join(dirpath,special_file))
+
+        return files_list
+
+    def scan_subdir(self):
+        subdir_list=[]
+        for dirpath,dirnames,files in os.walk(self.directory):
+            subdir_list.append(dirpath)
+        return subdir_list
 ```
 
 ## Load and prepare the data
@@ -29,106 +68,9 @@ A critical step in working with neural networks is preparing the data correctly.
 ```python
 # Here is where we get the raw data
 
-data_list = ['/Volumes/机器学习/发送文件/发送文件/1.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/2.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/3.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/4.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/5.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/6.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/7.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/8.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/9.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/10.csv',
-             '/Volumes/机器学习/发送文件/发送文件/11.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/12.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/13.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/14.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/15.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/16.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/17.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/18.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/19.csv',
-             '/Volumes/机器学习/发送文件/发送文件/20.csv',
-             '/Volumes/机器学习/发送文件/发送文件/21.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/22.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/23.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/24.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/25.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/26.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/27.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/28.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/29.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/30.csv',
-             '/Volumes/机器学习/发送文件/发送文件/31.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/32.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/33.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/34.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/35.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/36.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/37.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/38.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/39.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/40.csv',
-             '/Volumes/机器学习/发送文件/发送文件/41.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/42.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/43.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/44.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/45.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/46.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/47.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/48.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/49.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/50.csv',
-             '/Volumes/机器学习/发送文件/发送文件/51.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/52.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/53.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/54.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/55.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/56.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/57.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/58.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/59.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/60.csv',
-             '/Volumes/机器学习/发送文件/发送文件/61.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/62.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/63.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/64.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/65.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/66.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/67.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/68.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/69.csv',
-             '/Volumes/机器学习/发送文件/发送文件/70.csv',
-             '/Volumes/机器学习/发送文件/发送文件/71.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/72.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/73.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/74.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/75.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/76.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/77.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/78.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/79.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/80.csv',
-             '/Volumes/机器学习/发送文件/发送文件/81.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/82.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/83.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/84.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/85.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/86.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/87.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/88.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/89.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/90.csv',
-             '/Volumes/机器学习/发送文件/发送文件/91.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/92.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/93.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/94.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/95.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/96.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/97.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/98.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/99.csv', 
-             '/Volumes/机器学习/发送文件/发送文件/100.csv']
+files_dir = '/Volumes/MachineFunds/data_3000'
+file_scanner=ScanFile(files_dir)
+data_list=file_scanner.scan_files()
 
 # Here we set 'header' equals to None to indicate that there are no headers in the csv
 # file, Here the index is int64 rather than string.
@@ -143,120 +85,265 @@ for idx, data_path in enumerate(data_list):
         print('File %d:' %(idx+1), data_path)
 
 # Get the target labels in the second column and use remaining columns as feature
-targets = raw_data[2]
+targets = raw_data[1]
 
 # the first column is really large which doesn't mean anything and the first second
 # column is all the same which makes it impossible to get scaled
-features = raw_data.drop([0, 1, 2], axis=1)
+features = raw_data.drop([0, 1], axis=1)
+
+# delete the raw data
+del raw_data
 ```
-
-    Here we start to load all the data as listed below:
-    File 1: /Volumes/机器学习/发送文件/发送文件/1.csv
-
 
     /usr/local/lib/python3.6/site-packages/IPython/core/interactiveshell.py:2717: DtypeWarning: Columns (0) have mixed types. Specify dtype option on import or set low_memory=False.
       interactivity=interactivity, compiler=compiler, result=result)
 
 
-    File 2: /Volumes/机器学习/发送文件/发送文件/2.csv
-    File 3: /Volumes/机器学习/发送文件/发送文件/3.csv
-    File 4: /Volumes/机器学习/发送文件/发送文件/4.csv
-    File 5: /Volumes/机器学习/发送文件/发送文件/5.csv
-    File 6: /Volumes/机器学习/发送文件/发送文件/6.csv
-    File 7: /Volumes/机器学习/发送文件/发送文件/7.csv
-    File 8: /Volumes/机器学习/发送文件/发送文件/8.csv
-    File 9: /Volumes/机器学习/发送文件/发送文件/9.csv
-    File 10: /Volumes/机器学习/发送文件/发送文件/10.csv
-    File 11: /Volumes/机器学习/发送文件/发送文件/11.csv
-    File 12: /Volumes/机器学习/发送文件/发送文件/12.csv
-    File 13: /Volumes/机器学习/发送文件/发送文件/13.csv
-    File 14: /Volumes/机器学习/发送文件/发送文件/14.csv
-    File 15: /Volumes/机器学习/发送文件/发送文件/15.csv
-    File 16: /Volumes/机器学习/发送文件/发送文件/16.csv
-    File 17: /Volumes/机器学习/发送文件/发送文件/17.csv
-    File 18: /Volumes/机器学习/发送文件/发送文件/18.csv
-    File 19: /Volumes/机器学习/发送文件/发送文件/19.csv
-    File 20: /Volumes/机器学习/发送文件/发送文件/20.csv
-    File 21: /Volumes/机器学习/发送文件/发送文件/21.csv
-    File 22: /Volumes/机器学习/发送文件/发送文件/22.csv
-    File 23: /Volumes/机器学习/发送文件/发送文件/23.csv
-    File 24: /Volumes/机器学习/发送文件/发送文件/24.csv
-    File 25: /Volumes/机器学习/发送文件/发送文件/25.csv
-    File 26: /Volumes/机器学习/发送文件/发送文件/26.csv
-    File 27: /Volumes/机器学习/发送文件/发送文件/27.csv
-    File 28: /Volumes/机器学习/发送文件/发送文件/28.csv
-    File 29: /Volumes/机器学习/发送文件/发送文件/29.csv
-    File 30: /Volumes/机器学习/发送文件/发送文件/30.csv
-    File 31: /Volumes/机器学习/发送文件/发送文件/31.csv
-    File 32: /Volumes/机器学习/发送文件/发送文件/32.csv
-    File 33: /Volumes/机器学习/发送文件/发送文件/33.csv
-    File 34: /Volumes/机器学习/发送文件/发送文件/34.csv
-    File 35: /Volumes/机器学习/发送文件/发送文件/35.csv
-    File 36: /Volumes/机器学习/发送文件/发送文件/36.csv
-    File 37: /Volumes/机器学习/发送文件/发送文件/37.csv
-    File 38: /Volumes/机器学习/发送文件/发送文件/38.csv
-    File 39: /Volumes/机器学习/发送文件/发送文件/39.csv
-    File 40: /Volumes/机器学习/发送文件/发送文件/40.csv
-    File 41: /Volumes/机器学习/发送文件/发送文件/41.csv
-    File 42: /Volumes/机器学习/发送文件/发送文件/42.csv
-    File 43: /Volumes/机器学习/发送文件/发送文件/43.csv
-    File 44: /Volumes/机器学习/发送文件/发送文件/44.csv
-    File 45: /Volumes/机器学习/发送文件/发送文件/45.csv
-    File 46: /Volumes/机器学习/发送文件/发送文件/46.csv
-    File 47: /Volumes/机器学习/发送文件/发送文件/47.csv
-    File 48: /Volumes/机器学习/发送文件/发送文件/48.csv
-    File 49: /Volumes/机器学习/发送文件/发送文件/49.csv
-    File 50: /Volumes/机器学习/发送文件/发送文件/50.csv
-    File 51: /Volumes/机器学习/发送文件/发送文件/51.csv
-    File 52: /Volumes/机器学习/发送文件/发送文件/52.csv
-    File 53: /Volumes/机器学习/发送文件/发送文件/53.csv
-    File 54: /Volumes/机器学习/发送文件/发送文件/54.csv
-    File 55: /Volumes/机器学习/发送文件/发送文件/55.csv
-    File 56: /Volumes/机器学习/发送文件/发送文件/56.csv
-    File 57: /Volumes/机器学习/发送文件/发送文件/57.csv
-    File 58: /Volumes/机器学习/发送文件/发送文件/58.csv
-    File 59: /Volumes/机器学习/发送文件/发送文件/59.csv
-    File 60: /Volumes/机器学习/发送文件/发送文件/60.csv
-    File 61: /Volumes/机器学习/发送文件/发送文件/61.csv
-    File 62: /Volumes/机器学习/发送文件/发送文件/62.csv
-    File 63: /Volumes/机器学习/发送文件/发送文件/63.csv
-    File 64: /Volumes/机器学习/发送文件/发送文件/64.csv
-    File 65: /Volumes/机器学习/发送文件/发送文件/65.csv
-    File 66: /Volumes/机器学习/发送文件/发送文件/66.csv
-    File 67: /Volumes/机器学习/发送文件/发送文件/67.csv
-    File 68: /Volumes/机器学习/发送文件/发送文件/68.csv
-    File 69: /Volumes/机器学习/发送文件/发送文件/69.csv
-    File 70: /Volumes/机器学习/发送文件/发送文件/70.csv
-    File 71: /Volumes/机器学习/发送文件/发送文件/71.csv
-    File 72: /Volumes/机器学习/发送文件/发送文件/72.csv
-    File 73: /Volumes/机器学习/发送文件/发送文件/73.csv
-    File 74: /Volumes/机器学习/发送文件/发送文件/74.csv
-    File 75: /Volumes/机器学习/发送文件/发送文件/75.csv
-    File 76: /Volumes/机器学习/发送文件/发送文件/76.csv
-    File 77: /Volumes/机器学习/发送文件/发送文件/77.csv
-    File 78: /Volumes/机器学习/发送文件/发送文件/78.csv
-    File 79: /Volumes/机器学习/发送文件/发送文件/79.csv
-    File 80: /Volumes/机器学习/发送文件/发送文件/80.csv
-    File 81: /Volumes/机器学习/发送文件/发送文件/81.csv
-    File 82: /Volumes/机器学习/发送文件/发送文件/82.csv
-    File 83: /Volumes/机器学习/发送文件/发送文件/83.csv
-    File 84: /Volumes/机器学习/发送文件/发送文件/84.csv
-    File 85: /Volumes/机器学习/发送文件/发送文件/85.csv
-    File 86: /Volumes/机器学习/发送文件/发送文件/86.csv
-    File 87: /Volumes/机器学习/发送文件/发送文件/87.csv
-    File 88: /Volumes/机器学习/发送文件/发送文件/88.csv
-    File 89: /Volumes/机器学习/发送文件/发送文件/89.csv
-    File 90: /Volumes/机器学习/发送文件/发送文件/90.csv
-    File 91: /Volumes/机器学习/发送文件/发送文件/91.csv
-    File 92: /Volumes/机器学习/发送文件/发送文件/92.csv
-    File 93: /Volumes/机器学习/发送文件/发送文件/93.csv
+    Here we start to load all the data as listed below:
+    File 1: /Volumes/MachineFunds/data_3000/1.csv
+    File 2: /Volumes/MachineFunds/data_3000/10.csv
+    File 3: /Volumes/MachineFunds/data_3000/11.csv
+    File 4: /Volumes/MachineFunds/data_3000/12.csv
+    File 5: /Volumes/MachineFunds/data_3000/13.csv
+    File 6: /Volumes/MachineFunds/data_3000/14.csv
+    File 7: /Volumes/MachineFunds/data_3000/15.csv
+    File 8: /Volumes/MachineFunds/data_3000/16.csv
+    File 9: /Volumes/MachineFunds/data_3000/17.csv
+    File 10: /Volumes/MachineFunds/data_3000/18.csv
+    File 11: /Volumes/MachineFunds/data_3000/19.csv
+    File 12: /Volumes/MachineFunds/data_3000/2.csv
+    File 13: /Volumes/MachineFunds/data_3000/20.csv
+    File 14: /Volumes/MachineFunds/data_3000/21.csv
+    File 15: /Volumes/MachineFunds/data_3000/22.csv
+    File 16: /Volumes/MachineFunds/data_3000/23.csv
+    File 17: /Volumes/MachineFunds/data_3000/24.csv
+    File 18: /Volumes/MachineFunds/data_3000/25.csv
+    File 19: /Volumes/MachineFunds/data_3000/26.csv
+    File 20: /Volumes/MachineFunds/data_3000/27.csv
+    File 21: /Volumes/MachineFunds/data_3000/28.csv
+    File 22: /Volumes/MachineFunds/data_3000/29.csv
+    File 23: /Volumes/MachineFunds/data_3000/3.csv
+    File 24: /Volumes/MachineFunds/data_3000/30.csv
+    File 25: /Volumes/MachineFunds/data_3000/31.csv
+    File 26: /Volumes/MachineFunds/data_3000/32.csv
+    File 27: /Volumes/MachineFunds/data_3000/33.csv
+    File 28: /Volumes/MachineFunds/data_3000/34.csv
+    File 29: /Volumes/MachineFunds/data_3000/35.csv
+    File 30: /Volumes/MachineFunds/data_3000/36.csv
+    File 31: /Volumes/MachineFunds/data_3000/37.csv
+    File 32: /Volumes/MachineFunds/data_3000/38.csv
+    File 33: /Volumes/MachineFunds/data_3000/39.csv
+    File 34: /Volumes/MachineFunds/data_3000/4.csv
+    File 35: /Volumes/MachineFunds/data_3000/40.csv
+    File 36: /Volumes/MachineFunds/data_3000/41.csv
+    File 37: /Volumes/MachineFunds/data_3000/42.csv
+    File 38: /Volumes/MachineFunds/data_3000/43.csv
+    File 39: /Volumes/MachineFunds/data_3000/44.csv
+    File 40: /Volumes/MachineFunds/data_3000/45.csv
+    File 41: /Volumes/MachineFunds/data_3000/46.csv
+    File 42: /Volumes/MachineFunds/data_3000/47.csv
+    File 43: /Volumes/MachineFunds/data_3000/48.csv
+    File 44: /Volumes/MachineFunds/data_3000/49.csv
+    File 45: /Volumes/MachineFunds/data_3000/5.csv
+    File 46: /Volumes/MachineFunds/data_3000/50.csv
+    File 47: /Volumes/MachineFunds/data_3000/6.csv
+    File 48: /Volumes/MachineFunds/data_3000/7.csv
+    File 49: /Volumes/MachineFunds/data_3000/8.csv
+    File 50: /Volumes/MachineFunds/data_3000/9.csv
+
+
+# Wash the raw data
+Here we find some data in columns in form is not a number and delete those columns to further our experiments.
+
+
+```python
+# trace of the features
+trace = np.linalg.matrix_rank(features.values)
+
+# here is what we do to remove those columns with not a number values, column indexes
+# are printed.
+nan_col = np.where(np.isnan(features.values) == True)[1]
+print('Not a Number is located there: ', nan_col)
+
+# we drop those useless columns
+features = features.dropna(axis=1)
+```
+
+    /usr/local/lib/python3.6/site-packages/numpy/linalg/linalg.py:1591: RuntimeWarning: invalid value encountered in greater
+      return sum(S > tol)
+
+
+    Not a Number is located there:  [2726 2727 2333 ..., 2771 2772 2773]
 
 
 
 ```python
 # Head of the features
-features.head()
+print(np.linalg.matrix_rank(features.values))
+features.head(5)
 ```
+
+    185
+
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>...</th>
+      <th>2829</th>
+      <th>2830</th>
+      <th>2831</th>
+      <th>2832</th>
+      <th>2833</th>
+      <th>2834</th>
+      <th>2835</th>
+      <th>2836</th>
+      <th>2837</th>
+      <th>2838</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.504336</td>
+      <td>-0.001515</td>
+      <td>-0.002974</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>-0.001515</td>
+      <td>...</td>
+      <td>-0.732213</td>
+      <td>-0.321351</td>
+      <td>-0.495196</td>
+      <td>-0.528746</td>
+      <td>-0.255171</td>
+      <td>-1.354341</td>
+      <td>-1.992957</td>
+      <td>-1.667285</td>
+      <td>-0.350672</td>
+      <td>0.779335</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.731476</td>
+      <td>0.001579</td>
+      <td>-0.000677</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>0.001579</td>
+      <td>...</td>
+      <td>-0.850811</td>
+      <td>-1.102105</td>
+      <td>0.035168</td>
+      <td>-0.417740</td>
+      <td>-0.789885</td>
+      <td>1.260397</td>
+      <td>2.155116</td>
+      <td>0.877689</td>
+      <td>-0.739415</td>
+      <td>0.535623</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.557203</td>
+      <td>-0.003547</td>
+      <td>-0.006382</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>-0.003547</td>
+      <td>...</td>
+      <td>-1.065149</td>
+      <td>-1.775345</td>
+      <td>-1.896741</td>
+      <td>-1.804887</td>
+      <td>-2.080428</td>
+      <td>-0.860390</td>
+      <td>-0.898422</td>
+      <td>-0.794951</td>
+      <td>0.225396</td>
+      <td>2.216433</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.393331</td>
+      <td>-0.002041</td>
+      <td>-0.006511</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>-0.002041</td>
+      <td>...</td>
+      <td>-0.068502</td>
+      <td>-0.308363</td>
+      <td>0.227580</td>
+      <td>0.091325</td>
+      <td>-0.112073</td>
+      <td>-0.429996</td>
+      <td>-0.306691</td>
+      <td>-0.546743</td>
+      <td>-0.233236</td>
+      <td>1.740761</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.411687</td>
+      <td>-0.002323</td>
+      <td>-0.013646</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>-0.002323</td>
+      <td>...</td>
+      <td>-2.018887</td>
+      <td>1.054963</td>
+      <td>1.513833</td>
+      <td>1.990833</td>
+      <td>1.404082</td>
+      <td>-1.848934</td>
+      <td>-1.484598</td>
+      <td>-1.179912</td>
+      <td>-0.338743</td>
+      <td>2.113630</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 2647 columns</p>
+</div>
+
+
 
 ## Scaling target variables (optional)
 To make training the network easier, we'll standardize each of the continuous variables. That is, we'll shift and scale the variables such that they have zero mean and a standard deviation of 1.
@@ -276,7 +363,175 @@ for each in quant_features:
     mean, std = features[each].mean(), features[each].std()
     scales_feature[each] = [mean, std]
     features.loc[:, each] = (features[each] - mean)/std
+print(np.linalg.matrix_rank(features.values))
 ```
+
+    2130
+
+
+
+```python
+features.head(5)
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>...</th>
+      <th>2829</th>
+      <th>2830</th>
+      <th>2831</th>
+      <th>2832</th>
+      <th>2833</th>
+      <th>2834</th>
+      <th>2835</th>
+      <th>2836</th>
+      <th>2837</th>
+      <th>2838</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.286760</td>
+      <td>0.186127</td>
+      <td>1.913584</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>0.186127</td>
+      <td>...</td>
+      <td>-0.635627</td>
+      <td>-0.337530</td>
+      <td>-0.503343</td>
+      <td>-0.540678</td>
+      <td>-0.295757</td>
+      <td>-0.823949</td>
+      <td>-1.222380</td>
+      <td>-0.999809</td>
+      <td>-0.393728</td>
+      <td>-0.602980</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.473115</td>
+      <td>1.323473</td>
+      <td>2.325315</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>1.323473</td>
+      <td>...</td>
+      <td>-0.725015</td>
+      <td>-0.964377</td>
+      <td>-0.047797</td>
+      <td>-0.443712</td>
+      <td>-0.776997</td>
+      <td>1.011184</td>
+      <td>1.431276</td>
+      <td>0.497187</td>
+      <td>-0.853929</td>
+      <td>-0.662278</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.562886</td>
+      <td>-0.560357</td>
+      <td>1.302992</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>-0.560357</td>
+      <td>...</td>
+      <td>-0.886563</td>
+      <td>-1.504903</td>
+      <td>-1.707172</td>
+      <td>-1.655406</td>
+      <td>-1.938482</td>
+      <td>-0.477273</td>
+      <td>-0.522171</td>
+      <td>-0.486687</td>
+      <td>0.288232</td>
+      <td>-0.253319</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-0.293016</td>
+      <td>-0.006930</td>
+      <td>1.279937</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>-0.006930</td>
+      <td>...</td>
+      <td>-0.135385</td>
+      <td>-0.327103</td>
+      <td>0.117471</td>
+      <td>0.000964</td>
+      <td>-0.166969</td>
+      <td>-0.175205</td>
+      <td>-0.143621</td>
+      <td>-0.340688</td>
+      <td>-0.254705</td>
+      <td>-0.369055</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.197140</td>
+      <td>-0.110673</td>
+      <td>0.001297</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>-0.110673</td>
+      <td>...</td>
+      <td>-1.605399</td>
+      <td>0.767476</td>
+      <td>1.222272</td>
+      <td>1.660214</td>
+      <td>1.197565</td>
+      <td>-1.171076</td>
+      <td>-0.897166</td>
+      <td>-0.713128</td>
+      <td>-0.379606</td>
+      <td>-0.278332</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 2647 columns</p>
+</div>
+
+
 
 ## Projecting data on a compact dimension (optional)
 To deal with a high dimensional data, we need to porject a high dimentional data onto a low dimention, here I use PCA as the method.
@@ -301,8 +556,6 @@ To deal with a high dimensional data, we need to porject a high dimentional data
 #
 # * since U and V both contain orthonormal vectors, U*V.T is equivalent 
 #   to a whitened version of features.
-trace = np.linalg.matrix_rank(features.values)
-print('Not a Number is located there: ', np.where(np.isnan(features.values) == True))
 
 U, s, Vt = np.linalg.svd(features.values, full_matrices=False)
 V = Vt.T
@@ -337,10 +590,9 @@ targets.index = features.index
 
 ```
 
+    Using all PCs, MSE = 5.76234E-29
     Not a Number is located there:  (array([], dtype=int64), array([], dtype=int64))
-    Using all PCs, MSE = 4.10792E-29
-    Not a Number is located there:  (array([], dtype=int64), array([], dtype=int64))
-    Using first few PCs, MSE = 2.08115E-15
+    Using first few PCs, MSE = 0.00325042
 
 
 ## Splitting the data into training, testing, and validation sets
@@ -363,6 +615,165 @@ train_features, train_targets = data_features[:-400], data_targets[:-400]
 # Head of the scaled and projected features
 features.head()
 ```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>690</th>
+      <th>691</th>
+      <th>692</th>
+      <th>693</th>
+      <th>694</th>
+      <th>695</th>
+      <th>696</th>
+      <th>697</th>
+      <th>698</th>
+      <th>699</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-6.566169</td>
+      <td>19.032715</td>
+      <td>6.224122</td>
+      <td>17.110095</td>
+      <td>-0.085448</td>
+      <td>4.473312</td>
+      <td>5.887049</td>
+      <td>14.041211</td>
+      <td>6.691520</td>
+      <td>14.901784</td>
+      <td>...</td>
+      <td>-0.309276</td>
+      <td>0.141073</td>
+      <td>0.013992</td>
+      <td>-0.054940</td>
+      <td>-0.117338</td>
+      <td>-0.524727</td>
+      <td>0.264559</td>
+      <td>0.039653</td>
+      <td>-0.330006</td>
+      <td>0.076570</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-20.884434</td>
+      <td>26.640381</td>
+      <td>-4.646190</td>
+      <td>6.734236</td>
+      <td>4.569623</td>
+      <td>-10.895731</td>
+      <td>1.875132</td>
+      <td>13.964803</td>
+      <td>20.332528</td>
+      <td>17.547754</td>
+      <td>...</td>
+      <td>-0.134115</td>
+      <td>-0.141545</td>
+      <td>0.021505</td>
+      <td>-0.398683</td>
+      <td>-0.461437</td>
+      <td>-0.430340</td>
+      <td>0.639124</td>
+      <td>0.289004</td>
+      <td>0.070453</td>
+      <td>0.302907</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>15.811612</td>
+      <td>3.632730</td>
+      <td>31.646053</td>
+      <td>2.315861</td>
+      <td>1.891268</td>
+      <td>-7.555630</td>
+      <td>16.222121</td>
+      <td>3.621030</td>
+      <td>18.086279</td>
+      <td>7.869595</td>
+      <td>...</td>
+      <td>-0.083437</td>
+      <td>0.155509</td>
+      <td>-0.232784</td>
+      <td>-0.195763</td>
+      <td>-0.195178</td>
+      <td>-0.124140</td>
+      <td>0.406470</td>
+      <td>-0.292933</td>
+      <td>0.224434</td>
+      <td>-0.016303</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-8.083562</td>
+      <td>-10.692772</td>
+      <td>27.459058</td>
+      <td>8.842852</td>
+      <td>0.847682</td>
+      <td>0.076430</td>
+      <td>1.001536</td>
+      <td>7.829298</td>
+      <td>3.926591</td>
+      <td>7.476953</td>
+      <td>...</td>
+      <td>0.052880</td>
+      <td>0.042022</td>
+      <td>0.078435</td>
+      <td>0.217511</td>
+      <td>-0.064960</td>
+      <td>0.147006</td>
+      <td>0.062521</td>
+      <td>0.294573</td>
+      <td>0.189536</td>
+      <td>0.115230</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5.765388</td>
+      <td>-19.099900</td>
+      <td>31.664797</td>
+      <td>10.331895</td>
+      <td>-9.720690</td>
+      <td>-10.548815</td>
+      <td>-9.311432</td>
+      <td>-5.036263</td>
+      <td>10.492547</td>
+      <td>0.172944</td>
+      <td>...</td>
+      <td>-0.049919</td>
+      <td>0.035408</td>
+      <td>-0.262899</td>
+      <td>-0.175371</td>
+      <td>-0.050954</td>
+      <td>-0.291492</td>
+      <td>0.127735</td>
+      <td>0.151154</td>
+      <td>-0.102863</td>
+      <td>-0.065052</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 700 columns</p>
+</div>
+
+
 
 ## Build the network
 
@@ -466,7 +877,7 @@ The more hidden nodes you have, the more accurate predictions the model will mak
 import sys
 
 ### Set the hyperparameters here ###
-epochs = 1000
+epochs = 2000
 
 ### It's better got set no larger than 0.01 if the features are scaled
 learning_rate = 0.0004
@@ -496,24 +907,17 @@ for e in range(epochs):
     losses['validation'].append(val_loss)
 ```
 
+    Progress: 4.7% ... Training loss: 4.438 ... Validation loss: 5.2862
 
-```python
-plt.plot(losses['train'], label='Training loss')
+    /usr/local/lib/python3.6/site-packages/ipykernel/__main__.py:18: RuntimeWarning: overflow encountered in exp
+
+
+    Progress: 99.9% ... Training loss: 1.063 ... Validation loss: 1.315
+
+### plt.plot(losses['train'], label='Training loss')
 plt.plot(losses['validation'], label='Validation loss')
 plt.legend()
 plt.ylim(ymin=0.5, ymax=1.5)
-```
-
-
-
-
-    (0.5, 1.5)
-
-
-
-
-![png](output_17_1.png)
-
 
 
 ```python
@@ -533,12 +937,12 @@ ax.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x25ed6ceb8>
+    <matplotlib.legend.Legend at 0x10dd0a780>
 
 
 
 
-![png](output_18_1.png)
+![png](output_23_1.png)
 
 
 
@@ -559,12 +963,12 @@ ax.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x113ffafd0>
+    <matplotlib.legend.Legend at 0x109933ba8>
 
 
 
 
-![png](output_19_1.png)
+![png](output_24_1.png)
 
 
 ## Predictions on Testing data
@@ -589,12 +993,12 @@ ax.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x1142a5ba8>
+    <matplotlib.legend.Legend at 0x10a6e4c50>
 
 
 
 
-![png](output_21_1.png)
+![png](output_26_1.png)
 
 
 ## Unit tests
