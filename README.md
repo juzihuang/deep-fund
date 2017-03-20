@@ -22,7 +22,7 @@ import os
 import matplotlib.pyplot as plt
 ```
 
-## Define functions for file scanning 
+## Define functions for file scanning
 
 
 ```python
@@ -539,39 +539,39 @@ To deal with a high dimensional data, we need to porject a high dimentional data
 
 ```python
 # singular value decomposition factorises your data matrix such that:
-# 
+#
 #   features = U*S*V.T     (where '*' is matrix multiplication)
-# 
+#
 # * U and V are the singular matrices, containing orthogonal vectors of
 #   unit length in their rows and columns respectively.
 #
-# * S is a diagonal matrix containing the singular values of features - these 
-#   values squared divided by the number of observations will give the 
+# * S is a diagonal matrix containing the singular values of features - these
+#   values squared divided by the number of observations will give the
 #   variance explained by each PC.
 #
 # * if features is considered to be an (observations, features) matrix, the PCs
-#   themselves would correspond to the rows of S^(1/2)*V.T. if features is 
+#   themselves would correspond to the rows of S^(1/2)*V.T. if features is
 #   (features, observations) then the PCs would be the columns of
 #   U*S^(1/2).
 #
-# * since U and V both contain orthonormal vectors, U*V.T is equivalent 
+# * since U and V both contain orthonormal vectors, U*V.T is equivalent
 #   to a whitened version of features.
 
 U, s, Vt = np.linalg.svd(features.values, full_matrices=False)
 V = Vt.T
 
-# PCs are already sorted by descending order 
+# PCs are already sorted by descending order
 # of the singular values (i.e. by the
 # proportion of total variance they explain)
 
-# Method 1 reconstruction: 
+# Method 1 reconstruction:
 # if we use all of the PCs we can reconstruct the original signal perfectly.
 S = np.diag(s)
 Mhat = np.dot(U, np.dot(S, V.T))
 print('Using all PCs, MSE = %.6G' %(np.mean((features.values - Mhat)**2)))
 
 dim_remain = 700
-# Method 2 weak reconstruction: 
+# Method 2 weak reconstruction:
 # if we use only the first few PCs the reconstruction is less accurate，
 # the dimention is remained the same sa before, but some information is
 # lost in this reconstruction process.
@@ -579,9 +579,9 @@ Mhat2 = np.dot(U[:, :dim_remain], np.dot(S[:dim_remain, :dim_remain], V[:,:dim_r
 print('Not a Number is located there: ', np.where(np.isnan(features.values) == True))
 print('Using first few PCs, MSE = %.6G' %(np.mean((features.values - Mhat2)**2)))
 
-# Method 3 dimention reduction: 
+# Method 3 dimention reduction:
 # if we use only the first few PCs the reconstruction is less accurate,
-# the dimension is also recuded to (or to say projected on) into another 
+# the dimension is also recuded to (or to say projected on) into another
 # low dimenional space.
 Mhat3 = np.dot(U[:, :dim_remain], S[:dim_remain, :dim_remain])
 
@@ -780,7 +780,7 @@ features.head()
 The network has two layers, a hidden layer and an output layer. The hidden layer will use the sigmoid function for activations. The output layer has only one node and is used for the regression, the output of the node is the same as the input of the node. That is, the activation function is $f(x)=x$. A function that takes the input signal and generates an output signal, but takes into account the threshold, is called an activation function. We work through each layer of our network calculating the outputs for each neuron. All of the outputs from one layer become inputs to the neurons on the next layer. This process is called *forward propagation*.
 
 We use the weights to propagate signals forward from the input to the output layers in a neural network. We use the weights to also propagate error backwards from the output back into the network to update our weights. This is called *backpropagation*.
-  
+
 
 
 ```python
@@ -792,62 +792,62 @@ class NeuralNetwork(object):
         self.output_nodes = output_nodes
 
         # Initialize weights
-        self.weights_input_to_hidden = np.random.normal(0.0, self.hidden_nodes**-0.5, 
+        self.weights_input_to_hidden = np.random.normal(0.0, self.hidden_nodes**-0.5,
                                        (self.hidden_nodes, self.input_nodes))
 
-        self.weights_hidden_to_output = np.random.normal(0.0, self.output_nodes**-0.5, 
+        self.weights_hidden_to_output = np.random.normal(0.0, self.output_nodes**-0.5,
                                        (self.output_nodes, self.hidden_nodes))
         self.lr = learning_rate
-        
+
         #### Set this to your implemented sigmoid function ####
         # Activation function is the sigmoid function
         self.sigmoid = lambda x: 1 / (1 + np.exp(-x))
-    
+
     def train(self, inputs_list, targets_list):
         # Convert inputs list to 2d array
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
-        
+
         #### Implement the forward pass here ####
         ### Forward pass ###
         # TODO: Hidden layer
         hidden_inputs = np.dot(self.weights_input_to_hidden, inputs)# signals into hidden layer
         hidden_outputs = self.sigmoid(hidden_inputs)# signals from hidden layer
-        
+
         # TODO: Output layer
         final_inputs = np.dot(self.weights_hidden_to_output, hidden_outputs)# signals into final output layer
         final_outputs = final_inputs# signals from final output layer
-        
+
         #### Implement the backward pass here ####
         ### Backward pass ###
-        
+
         # TODO: Output error
         output_errors = targets - final_outputs # Output layer error is the difference between desired target and actual output.
         output_grad = output_errors
-        
+
         # TODO: Backpropagated error
         hidden_errors = np.dot(self.weights_hidden_to_output.T, output_grad)# errors propagated to the hidden layer
         hidden_grad = hidden_outputs * (1 - hidden_outputs)# hidden layer gradients
-        
+
         # TODO: Update the weights
         # import pdb; pdb.set_trace()
         self.weights_hidden_to_output += np.dot(output_grad, hidden_outputs.T) * self.lr# update hidden-to-output weights with gradient descent step
         self.weights_input_to_hidden += np.dot(hidden_errors * hidden_grad, inputs.T) * self.lr# update input-to-hidden weights with gradient descent step
-         
-        
+
+
     def run(self, inputs_list):
         # Run a forward pass through the network
         inputs = np.array(inputs_list, ndmin=2).T
-        
+
         #### Implement the forward pass here ####
         # TODO: Hidden layer
         hidden_inputs = inputs# signals into hidden layer
         hidden_outputs = self.sigmoid(np.dot(self.weights_input_to_hidden, hidden_inputs))# signals from hidden layer
-        
+
         # TODO: Output layer
         final_inputs = hidden_outputs# signals into final output layer
-        final_outputs = np.dot(self.weights_hidden_to_output, final_inputs)# signals from final output layer 
-        
+        final_outputs = np.dot(self.weights_hidden_to_output, final_inputs)# signals from final output layer
+
         return final_outputs
 ```
 
@@ -891,10 +891,10 @@ losses = {'train':[], 'validation':[]}
 for e in range(epochs):
     # Go through a random batch of 128 records from the training data set
     batch = np.random.choice(train_features.index, size=128)
-    for record, target in zip(train_features.ix[batch].values, 
+    for record, target in zip(train_features.ix[batch].values,
                               train_targets.ix[batch]):
         network.train(record, target)
-    
+
     # Printing out the training progress
     # import pdb; pdb.set_trace()
     train_loss = MSE(network.run(train_features), train_targets.values)
@@ -902,7 +902,7 @@ for e in range(epochs):
     sys.stdout.write("\rProgress: " + str(100 * e/float(epochs))[:4] \
                      + "% ... Training loss: " + str(train_loss)[:5] \
                      + " ... Validation loss: " + str(val_loss)[:5])
-    
+
     losses['train'].append(train_loss)
     losses['validation'].append(val_loss)
 ```
@@ -942,7 +942,7 @@ ax.legend()
 
 
 
-![png](output_23_1.png)
+![png](pca_nn_multiple/output_23_1.png)
 
 
 
@@ -968,7 +968,7 @@ ax.legend()
 
 
 
-![png](output_24_1.png)
+![png](pca_nn_multiple/output_24_1.png)
 
 
 ## Predictions on Testing data
@@ -998,7 +998,7 @@ ax.legend()
 
 
 
-![png](output_26_1.png)
+![png](pca_nn_multiple/output_26_1.png)
 
 
 ## Unit tests
@@ -1011,24 +1011,24 @@ import unittest
 
 inputs = [0.5, -0.2, 0.1]
 targets = [0.4]
-test_w_i_h = np.array([[0.1, 0.4, -0.3], 
+test_w_i_h = np.array([[0.1, 0.4, -0.3],
                        [-0.2, 0.5, 0.2]])
 test_w_h_o = np.array([[0.3, -0.1]])
 
 class TestMethods(unittest.TestCase):
-    
+
     ##########
     # Unit tests for data loading
     ##########
-    
+
     def test_data_path(self):
         # Test that file path to dataset has been unaltered
         self.assertTrue(data_path.lower() == 'bike-sharing-dataset/hour.csv')
-        
+
     def test_data_loaded(self):
         # Test that data frame loaded
         self.assertTrue(isinstance(rides, pd.DataFrame))
-    
+
     ##########
     # Unit tests for network functionality
     ##########
@@ -1043,9 +1043,9 @@ class TestMethods(unittest.TestCase):
         network = NeuralNetwork(3, 2, 1, 0.5)
         network.weights_input_to_hidden = test_w_i_h.copy()
         network.weights_hidden_to_output = test_w_h_o.copy()
-        
+
         network.train(inputs, targets)
-        self.assertTrue(np.allclose(network.weights_hidden_to_output, 
+        self.assertTrue(np.allclose(network.weights_hidden_to_output,
                                     np.array([[ 0.37275328, -0.03172939]])))
         self.assertTrue(np.allclose(network.weights_input_to_hidden,
                                     np.array([[ 0.10562014,  0.39775194, -0.29887597],
@@ -1071,7 +1071,7 @@ unittest.TextTestRunner().run(suite)
       File "<ipython-input-15-1b584817c956>", line 21, in test_data_loaded
         self.assertTrue(isinstance(rides, pd.DataFrame))
     NameError: name 'rides' is not defined
-    
+
     ======================================================================
     FAIL: test_data_path (__main__.TestMethods)
     ----------------------------------------------------------------------
@@ -1079,10 +1079,10 @@ unittest.TextTestRunner().run(suite)
       File "<ipython-input-15-1b584817c956>", line 17, in test_data_path
         self.assertTrue(data_path.lower() == 'bike-sharing-dataset/hour.csv')
     AssertionError: False is not true
-    
+
     ----------------------------------------------------------------------
     Ran 5 tests in 0.010s
-    
+
     FAILED (failures=1, errors=1)
 
 
